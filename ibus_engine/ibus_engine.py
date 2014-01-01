@@ -36,6 +36,7 @@ sys.path.append(
 import bogo
 from config import Config
 from keysyms_mapping import mapping
+from abbr import AbbreviationExpander
 
 import vncharsets
 vncharsets.init()
@@ -91,6 +92,8 @@ class Engine(IBus.Engine):
         self.is_lookup_table_shown = False
 
         self.setup_tool_buttons()
+
+        self.abbr_expander = AbbreviationExpander("rules.json")
 
         self.reset_engine()
 
@@ -198,7 +201,8 @@ class Engine(IBus.Engine):
 
             logging.debug("New string: %s", self.new_string)
 
-            self.commit_result(self.new_string)
+            expanded_string = self.abbr_expander.expand(self.new_string)
+            self.commit_result(expanded_string)
             self.old_string = self.new_string
 
             return True
